@@ -437,7 +437,7 @@ section {height: auto; display: block; }
         ---------------------------------*/
         $('#contactPage').hide();
         $('body').removeClass('loading');
-        var vm = new ViewModel(contacts || []);
+        var vm = new ViewModel(contacts);
         ko.applyBindings(vm);
     </script>
 </body>
