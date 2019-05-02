@@ -1,0 +1,229 @@
+/*---------------------------------------
+Layout
+---------------------------------------*/
+html, body {
+    height: 100%;
+    min-height:100%;
+    font-size: 100%;
+    position: relative;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Calibri, 'Gill Sans', Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+body {
+    background-color: #EBEFF2;
+    overflow: hidden;
+}
+section {
+    height: 100%;
+    width: 100%;
+
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+
+    position: absolute;
+}
+.loader {
+    display: none;
+}
+.loading .loader {
+    display: block;
+    position: absolute;
+    top: 2em;
+    left: 50%;
+}
+.loading section {
+    visibility: hidden;
+}
+/*---------------------------------------
+Header
+---------------------------------------*/
+header {
+    margin: 1rem 0 1rem 0;
+}
+.header-wrapper {
+    box-shadow: 0px 6px 2px #666;
+    padding-bottom: 1em;
+}
+h1 {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    font-size: 2.5rem;
+    font-weight: 100;
+}
+.action-icons a {
+    width: 2rem;
+    height: 2rem;
+    margin: .5rem 1.5rem 0 0;
+    float: left;
+    display: block;
+    border: 2px solid #000;
+    border-radius: 100%;
+    color: #000;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+}
+.action-icons a,
+.action-icons a:hover,
+.action-icons a:visited {
+    text-decoration: none;
+    color: #000;
+}
+#backButton {
+    background-image: url('back-sm.png');
+}
+#newContact {
+    background-image: url('new-sm.png');
+}
+#deleteContact {
+    background-image: url('cancel-sm.png');
+}
+#saveContact {
+    background-image: url('save-sm.png');
+}
+#searchForm {
+    margin-top: 1rem;
+}
+.toc {
+    text-align: center;
+    margin-top: 1rem;
+}
+.toc a {
+    margin: 0 .4rem;
+}
+.sortby {
+    text-align: center;
+    margin-top: 1rem;
+}
+.sortby .dropdown-menu {
+    padding-left: 1rem;
+    border-radius: 0px;
+}
+@media (min-width: 500px) {
+    h1 {
+        float: left;
+    }
+    .action-icons {
+        float: right;
+    }
+    .action-icons a {
+        margin-right: 0;
+        margin-left: 1.5rem;
+    }
+}
+@media (min-width: 768px) {
+    header {
+        margin: 3rem 0 2rem 0;
+    }
+    h1 {
+        font-size: 4rem;
+    }
+    .action-icons a {
+        width: 3rem;
+        height: 3rem;
+        margin-top: 1rem;
+        margin-right: 0;
+        margin-left: 1.5rem;
+        background-size: auto auto;
+    }
+    #searchForm {
+        margin-top: 2rem;
+    }
+}
+/*---------------------------------------
+Main
+---------------------------------------*/
+article {
+    flex: 2;
+    overflow-y: auto;
+    padding-bottom: 2rem;
+}
+h2 {
+    font-weight: 100;
+    margin: 2rem 0;
+}
+.messages {
+    margin-top: 1rem;
+    text-align: center;
+}
+/*---------------------------------------
+Contact list
+---------------------------------------*/
+.cl {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.cl li {
+    padding: 1rem 0;
+    cursor: pointer;
+}
+li.cat {
+    cursor: default;
+    padding: .5rem 0;
+    border-bottom: 1px solid #000;
+}
+li.cat span {
+    font-size: 2rem;
+    font-weight: 100;
+}
+.avatar {
+    display: block;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    border-radius: 100%;
+    margin: 0 1rem 0 0;
+}
+.name {
+    font-size: 1.15rem;
+    font-weight: normal;
+    margin: .25rem 0;
+    line-height: 1;
+}
+.phone {
+    margin: 0 0 .25rem 0;
+    line-height: 1;
+}
+@media (min-width: 400px) {
+    .item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 1rem;
+    }
+}
+/*---------------------------------------
+Misc.
+---------------------------------------*/
+#searchForm .btn,
+.form-control {
+    border-radius: 0px;
+}
+.form-group label {
+    font-weight: normal;
+}
+.error-text {
+    font-size: .85rem;
+    display: none;
+    color: #a94442;
+}
+.has-error .error-text {
+    display: inline;
+}

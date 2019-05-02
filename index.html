@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height">
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW">
+<title>My Contacts</title>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" href="contacts.css">
+<!--[if lt IE 10]>
+<style>
+body {overflow: auto; }
+section {height: auto; display: block; }
+</style>
+<![endif]-->
+</head>
+<body class="loading">
+    <section id="homePage">
+        <header>
+           <div class="container header-wrapper">
+               <div class="row">
+                   <div class="col-md-12">
+                        <div class="clearfix">
+                            <h1>Contacts</h1>
+                            <div class="action-icons">
+                                <a href="#" id="newContact" data-bind="click: newContact"></a>
+                            </div>
+                        </div><!-- end clearfix -->
+                        <div id="searchForm">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search for..." aria-label="Press enter to search" data-bind="textInput: search">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-default" type="button" aria-label="Click to clear search" data-bind="click: clearSearch">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </div><!-- end input-group-btn -->
+                            </div><!-- end input-group -->
+                        </div><!-- end searchForm -->
+                        <nav class="toc" data-bind="foreach: lettersArray, visible: contactsList().length > 0">
+                            <a data-bind="text: $data, attr: {href: '#cat-' + $data}"></a>
+                        </nav>
+                        <div class="row sortby" data-bind="visible: contactsList().length > 0">
+                            <div class="col-sm-4 col-sm-offset-4">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Sort by <span data-bind="text: sortby"></span></a>
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <li><div class="radio"><label><input type="radio" name="sortFilter" value="first name" data-bind="checked: sortby">First name</label></div></li>
+                                    <li><div class="radio"><label><input type="radio" name="sortFilter" value="last name" data-bind="checked: sortby">Last name</label></div></li>
+                                    <li><div class="radio"><label><input type="radio" name="sortFilter" value="email" data-bind="checked: sortby">Email</label></div></li>
+                                </ul>
+                            </div><!-- end col -->
+                        </div><!-- end row -->
+                        <div class="messages" data-bind="visible: contactsList().length < 1 && search().length < 1">
+                            <p>There are no contacts. <a href="#" data-bind="click: newContact">Create one here.</a></p>
+                        </div><!-- end messages -->
+                        <div class="messages" data-bind="visible: contactsList().length < 1 && search().length > 0">
+                            <p>No results for "<span data-bind="text: search"></span>."</p>
+                        </div><!-- end messages -->
+                   </div><!-- end col -->
+               </div><!-- end row -->
+           </div><!-- end container -->
+        </header>
+        <article>
+            <div class="container">
+               <div class="row">
+                   <div class="col-md-12">
+                        <ul id="contactList" class="cl" data-bind="foreach: {data: lettersArray, as: 'letter'}">
+                            <li class="cat" data-bind="attr: {id: 'cat-' + letter}, css: {hide: $parent.search().length > 0}"><span data-bind="text: letter"></span></li>
+                            <!-- ko foreach: $parent.alphabetize(letter) -->
+                            <li data-bind="click: $root.editContact">
+                                <div class="item">
+                                    <img class="avatar" src="avatar.jpg" alt="">
+                                    <div class="info">
+                                        <p class="name" data-bind="text: $root.fullName($data)"></p>
+                                        <p class="phone" data-bind="visible: $data.phone, text: $data.phone"></p>
+                                        <p class="email" data-bind="visible: $data.email, text: $data.email"></p>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- /ko -->
+                        </ul>
+                   </div><!-- end col -->
+               </div><!-- end row -->
+            </div><!-- end container -->
+        </article>
+    </section>
+    <section id="contactPage">
+        <header>
+           <div class="container">
+               <div class="row">
+                   <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-sm-7"><h1 data-bind="text: pageTitle"></h1></div>
+                            <div class="col-sm-5">
+                                <div class="action-icons">
+                                    <a href="#" id="backButton" data-bind="click: backButton"></a>
+                                    <a href="#" id="saveContact" data-bind="click: saveContact"></a>
+                                    <a href="#" id="deleteContact" data-bind="click: deleteContact"></a>
+                                </div>
+                            </div>
+                        </div><!-- end row -->
+                   </div><!-- end col -->
+               </div><!-- end row -->
+           </div><!-- end container -->
+        </header>
+        <article>
+            <form id="newContactForm" class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <h2>Name</h2>
+                                <div class="form-group">
+                                    <label class="control-label" for="firstName">First</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" data-bind="value: (current()) ? current().firstName : '' ">
+                                    <span class="error-text">First name is the only required field.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="lastName">Last</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" data-bind="value: (current()) ? current().lastName : '' ">
+                                </div>
+                                <h2>Contact Info</h2>
+                                <div class="form-group">
+                                    <label class="control-label" for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" data-bind="value: (current()) ? current().email : '' ">
+                                    <span class="error-text">Please enter an email address in this format: test@example.com. (Only letters, numbers, periods and underscores allowed)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="phone">Phone</label>
+                                    <input type="text" class="form-control" id="phone" name="phone" data-bind="value: (current()) ? current().phone : '' ">
+                                </div>
+                            </div><!-- end col -->
+                            <div class="col-sm-5 col-sm-offset-2">
+                                <h2>Address</h2>
+                                <div class="form-group">
+                                    <label class="control-label" for="address">Address</label>
+                                    <input type="text" class="form-control" id="address" name="address" data-bind="value: (current()) ? current().address : '' ">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="address2">Address 2</label>
+                                    <input type="text" class="form-control" id="address2" name="address2" data-bind="value: (current()) ? current().address2 : '' ">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="city">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" data-bind="value: (current()) ? current().city : '' ">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="state">State</label>
+                                    <input type="text" class="form-control" id="state" name="state" data-bind="value: (current()) ? current().state : '' ">
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="zipcode">Zip code</label>
+                                    <input type="text" class="form-control" id="zipcode" name="zipcode" data-bind="value: (current()) ? current().zipcode : '' ">
+                                </div>
+                            </div><!-- end col -->
+                        </div><!-- end row -->
+                    </div><!-- end col -->
+                </div><!-- end row -->
+            </form>
+        </article>
+    </section>
+    <div class="loader">
+        <p>Loading...</p>
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout.mapping/2.4.1/knockout.mapping.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script>
+        /*---------------------------------
+        Model for an individual contact
+        ---------------------------------*/
+        var Contact = function (data) {
+            this.id = ko.observable(data.id || '');
+            this.firstName = ko.observable(data.firstName || '');
+            this.lastName = ko.observable(data.lastName || '');
+            this.email = ko.observable(data.email || '');
+            this.phone = ko.observable(data.phone || '');
+            this.address = ko.observable(data.address || '');
+            this.address2 = ko.observable(data.address2 || '');
+            this.city = ko.observable(data.city || '');
+            this.state = ko.observable(data.state || '');
+            this.zipcode = ko.observable(data.zipcode || '');
+        };
+
+        /*---------------------------------
+        Fake database
+        ---------------------------------*/
+        var contacts = [
+            {"id":1,"firstName":"Patricia","lastName":"Rogers","email":"progers0@gov.uk","phone":"(015) 796-4450","address":"5 Orin Place","address2":"183 Bluejay Drive","city":"Chicago","state":"IL","zipcode":"45123"},
+            {"id":2,"firstName":"Sandra","lastName":"Lawrence","email":"slawrence1@domainmarket.com","phone":"(317) 847-3657","address":"292 Prairie Rose Circle","address2":"4 Sachtjen Point","city":"Chicago","state":"IL","zipcode":"45123"},
+            {"id":3,"firstName":"Brian","lastName":"Hughes","email":"bhughes2@xrea.com","phone":"(361) 007-2438","address":"142 Leroy Place","address2":"3253 School Park","city":"Ridgely","state":"MD","zipcode":"45123"},
+            {"id":3,"firstName":"Brad","lastName":"Awrew","email":"radb@xrea.com","phone":"(361) 441-2547","address":"666 Spruce","address2":"","city":"Richmond","state":"MD","zipcode":"55441"},
+            {"id":4,"firstName":"Rose","lastName":"Murray","email":"rmurray3@aboutads.info","phone":"(373) 472-9925","address":"815 Redwing Pass","address2":"78 Walton Junction","city":"Phoenix","state":"AZ","zipcode":"45123"},
+            {"id":5,"firstName":"Susan","lastName":"Morris","email":"smorris4@chicagotribune.com","phone":"(389) 432-6903","address":"71589 Milwaukee Street","address2":"11415 Hollow Ridge Crossing","city":"San Jose","state":"CA","zipcode":"45123"},
+            {"id":6,"firstName":"Mark","lastName":"Gibson","email":"mgibson5@vinaora.com","phone":"(877) 770-5895","address":"2 Graedel Alley","address2":"155 Debs Terrace","city":"El Paso","state":"TX","zipcode":"45123"},
+            {"id":7,"firstName":"Anne","lastName":"Richardson","email":"arichardson6@berkeley.edu","phone":"(149) 453-0034","address":"280 Graedel Trail","address2":"20 Badeau Crossing","city":"Fresno","state":"CA","zipcode":"45123"},
+            {"id":8,"firstName":"Steven","lastName":"Weaver","email":"sweaver7@alibaba.com","phone":"(679) 484-7866","address":"790 Daystar Crossing","address2":"678 Onsgard Alley","city":"Milwaukee","state":"WI","zipcode":"45123"},
+            {"id":9,"firstName":"Zach","lastName":"Stanley","email":"lstanley8@over-blog.com","phone":"(337) 794-1023","address":"5 Schiller Avenue","address2":"7 Merry Crossing","city":"Houston","state":"TX","zipcode":"45123"}
+        ];
+
+        /*---------------------------------
+        The main view model
+        ---------------------------------*/
+        var ViewModel = function(data) {
+            var self = this;
+            var homePage = $('#homePage');
+            var contactPage = $('#contactPage');
+            var newContactForm = $("#newContactForm");
+
+            // Data store of all contacts.
+            self.contacts = ko.observableArray(ko.utils.arrayMap(data, function(item) {
+                return new Contact(item);
+            }));
+
+            self.search = ko.observable('');
+
+            self.clearSearch = function(data, event) {
+                self.search('');
+                event.currentTarget.blur();
+            };
+
+            self.sortby = ko.observable("first name");
+
+            // These are the contacts we'll be working with in our main list, filtered by search if applicable.
+            self.contactsList = ko.computed(function() {
+                var search = self.search().toLowerCase();
+                if (!search) {
+                    return self.contacts();
+                }
+                else {
+                    var arr = self.contacts().filter(function(item) {
+                        if (
+                            item.firstName().toLowerCase().indexOf(search, 0) > -1 ||
+                            item.lastName().toLowerCase().indexOf(search, 0) > -1 ||
+                            item.email().toLowerCase().indexOf(search, 0) > -1
+                        ) {return item;}
+                    });
+                    return arr;
+                }
+            });
+
+            // An array of the first character of the first name, last name or email,
+            // depending on the sort selection. To be used as a table of contents.
+            self.lettersArray = ko.observableArray([]);
+
+            // Get the letters for the table of contents and sort them alphabetically,
+            // removing duplicates. letterExtractor() will default to first name.
+            self.letters = ko.computed(function() {
+                var arr = ko.utils.arrayMap(self.contacts(), function(item) {
+                    var x = letterExtractor(item);
+                    return x.toUpperCase();
+                });
+
+                var uniqueArray = arr.filter(function(elem, pos) {
+                    return arr.indexOf(elem) == pos;
+                }).sort();
+
+                self.lettersArray(uniqueArray);
+            });
+
+            // Build the contacts list, alphabetizing each contact under the first,
+            // last or email letter.
+            self.alphabetize = function(letter) {
+                var arr = self.contactsList().filter(function(item) {
+                    var x = letterExtractor(item);
+
+                    if (x.toUpperCase() === letter) {
+                        return item;
+                    }
+                });
+                return arr;
+            };
+
+            self.fullName = function(item) {
+                var name = item.firstName() + " " + item.lastName();
+                return $.trim(name);
+            };
+
+            self.pageTitle = ko.observable('New Contact');
+
+            // Store the current contact being edited or created.
+            self.current = ko.observable("");
+
+            // Create an empty contact model for new entries.
+            self.newContact = function() {
+                var obj = new Contact({});
+                self.current(obj);
+                router('newContact');
+            };
+
+            // Create a copy of the contact being edited so that if it's abandoned the original won't be altered.
+            self.editContact = function(contact, event) {
+                var obj = new Contact(ko.mapping.toJS(contact));
+                self.current(obj);
+                router('editContact');
+            };
+
+            // Saves both new and edited contacts.
+            self.saveContact = function() {
+
+                if (!formIsValid()) {return false;}
+
+                // If there is a reference to the contact in the data store...
+                var arr = self.contacts().filter(function(item) {
+                    if (item.id() === self.current().id()) {
+                        return item;
+                    }
+                });
+
+                // ...replace it with the one we edited. Otherwise, add the new one.
+                if (arr.length > 0) {
+                    self.contacts.replace(arr[0], self.current());
+                }
+                else {
+                    self.contacts.push(self.current());
+                }
+
+                router('homePage');
+            };
+
+            self.deleteContact = function() {
+                // Don't try to delete an empty form or one without a first name.
+                if ($.trim(self.current().firstName()).length < 1) {
+                    router('homePage');
+                    return false;
+                }
+
+                // Confirm they want to delete.
+                var name = $.trim(self.current().firstName() + ' ' + self.current().lastName());
+                var rm = confirm('Delete ' + name + ' from contacts?');
+                if (rm) {
+                    var arr = self.contacts().filter(function(item) {
+                        if (item.id() === self.current().id()) {
+                            return item;
+                        }
+                    });
+                    self.contacts.remove(arr[0]);
+                    router('homePage');
+                }
+            };
+
+            self.backButton = function() {
+                router('homePage');
+            };
+
+            function letterExtractor(item) {
+                var x = item.firstName().charAt(0);
+                var y = null;
+                switch(self.sortby()) {
+                    case 'email':
+                        y = item.email().charAt(0);
+                        break;
+                    case 'last name':
+                        y = item.lastName().charAt(0);
+                        break;
+                }
+                if (y) {x = y}
+                return x;
+            }
+
+            function formIsValid() {
+                var errors = [];
+
+                // Make sure there is at least a first name for the contact.
+                if ($.trim(self.current().firstName()).length < 1) {
+                    $('#firstName').parent().addClass('has-error');
+                    errors.push('firstName');
+                }
+                else {
+                    $('#firstName').parent().removeClass('has-error');
+                }
+
+                // Emails can only have letters, numbers, periods and underscores.
+                var regex = /^([a-zA-Z0-9_.])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                var val = self.current().email();
+
+                if ( $.trim(val).length > 0 && !regex.test(val) ) {
+                    $('#email').parent().addClass('has-error');
+                    errors.push('email');
+                }
+                else {
+                    $('#email').parent().removeClass('has-error');
+                }
+
+                // Reformat phone to look like (123) 456-7890. International codes aren't accounted for, except USA 1.
+                var phonenum = $.trim(self.current().phone());
+
+                if (phonenum.length > 0) {
+                    phonenum = phonenum.replace(/[^0-9]/g, '');
+
+                    if (phonenum.length > 10) {
+                        phonenum = phonenum.substring(0,11).replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, "$1 ($2) $3-$4");
+                    }
+                    else if (phonenum.length < 10) {
+                        phonenum = phonenum.replace(/(\d{3})(\d{4})/, "$1-$2");
+                    }
+                    else {
+                        phonenum = phonenum.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                    }
+                    self.current().phone(phonenum);
+                }
+
+                if (errors.length > 0) {return false;} else {return true;}
+            }
+
+            // A pseudo page router that shows/hides each section.
+            function router(page) {
+                switch(page) {
+                    case 'homePage':
+                        homePage.show();
+                        contactPage.hide();
+                        newContactForm[0].reset();
+                        newContactForm.find('.form-group').removeClass('has-error');
+                        self.current('');
+                        break;
+                    case 'newContact':
+                        homePage.hide();
+                        contactPage.show();
+                        self.pageTitle('New Contact');
+                        self.search('');
+                        break;
+                    case 'editContact':
+                        homePage.hide();
+                        contactPage.show();
+                        self.pageTitle('Edit Contact');
+                        self.search('');
+                        break;
+                    default:
+                        // do nothing
+                }
+            }
+
+            return self;
+        };
+
+        /*---------------------------------
+        Init app.
+        ---------------------------------*/
+        $('#contactPage').hide();
+        $('body').removeClass('loading');
+        var vm = new ViewModel(contacts || []);
+        ko.applyBindings(vm);
+    </script>
+</body>
+</html>
